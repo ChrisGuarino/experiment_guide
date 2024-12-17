@@ -1,41 +1,40 @@
 import streamlit as st
-from datetime import time, datetime
 
-st.header('st.slider')
+# Streamlit UI Configuration
+st.set_page_config(page_title="Simple Chatbot", page_icon="💬")
+st.title("💬 Simple Hardcoded Chatbot")
 
-# Example 1
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-st.subheader('Slider')
+# Display previous chat messages
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-age = st.slider('How old are you?', 0, 130, 25)
-st.write("I'm ", age, 'years old')
+# Function to provide hardcoded responses
+def get_hardcoded_response(prompt):
+    responses = {
+        "hello": "Hi there! How can I assist you today?",
+        "how are you?": "I'm just a bot, but I'm functioning as expected! How about you?",
+        "bye": "Goodbye! Have a great day!",
+        "what is your name?": "I'm a simple chatbot created with Streamlit.",
+    }
+    # Default response for unknown inputs
+    return responses.get(prompt.lower(), "I'm sorry, I don't understand that.")
 
-# Example 2
+# User Input Section
+if prompt := st.chat_input("Type your message here..."):
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.write(prompt)
 
-st.subheader('Range slider')
+    # Get hardcoded response
+    response = get_hardcoded_response(prompt)
 
-values = st.slider(
-     'Select a range of values',
-     0.0, 100.0, (25.0, 75.0))
-st.write('Values:', values)
-
-# Example 3
-
-st.subheader('Range time slider')
-
-appointment = st.slider(
-     "Schedule your appointment:",
-     value=(time(11, 30), time(12, 45)))
-st.write("You're scheduled for:", appointment)
-
-# Example 4
-
-st.subheader('Datetime slider')
-
-start_time = st.slider(
-     "When do you start?",
-     value=datetime(2020, 1, 1, 9, 30),
-     format="MM/DD/YY - hh:mm")
-st.write("Start time:", start_time) 
-
-# https://30days.streamlit.app/?challenge=Day8
+    # Add assistant response to chat history
+    with st.chat_message("assistant"):
+        st.write(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
